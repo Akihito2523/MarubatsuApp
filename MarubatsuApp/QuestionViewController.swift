@@ -26,6 +26,11 @@ class QuestionViewController: UIViewController {
         //セグメンテッドコントローラー選択している項目の背景色
         outletSegmentedControl.selectedSegmentTintColor = UIColor.systemMint
         outletSegmentedControl.setTitleTextAttributes( [NSAttributedString.Key.foregroundColor:UIColor.black], for: .normal)
+        //myUserDefaultsでデータをquestionsに保存
+        let myUserDefaults = UserDefaults.standard
+        if myUserDefaults.object(forKey: "questionsAdd") != nil {
+            questions = myUserDefaults.object(forKey: "questionsAdd") as! [[String: Any]]
+        }
     }
     
     //テキストフィールドに最初からフォーカスが表示される
@@ -46,9 +51,11 @@ class QuestionViewController: UIViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             print("✗が選択されてます")
+            print(outletSegmentedControl.selectedSegmentIndex)
             selectionSegment.text = "✗が選択されてます"
         case 1:
             print("◯が選択されてます")
+            print(outletSegmentedControl.selectedSegmentIndex)
             selectionSegment.text = "◯が選択されてます"
         default:
             print("存在しない番号")
@@ -73,13 +80,17 @@ class QuestionViewController: UIViewController {
             
             //UserDefaultsのインスタンスの生成
             let myUserDefaults = UserDefaults.standard
-            //データの読み込み
-            questions = myUserDefaults.object(forKey: "questionsAdd") as! [[String: Any]]
+            
+            if myUserDefaults.object(forKey: "questionsAdd") != nil {
+                questions = myUserDefaults.object(forKey: "questionsAdd") as! [[String: Any]]
+            }
+            
             //questionsに問題文と◯✗を追加する
             questions.append(["textFieldAdd": textField.text!, "boolAnswer": boolAnswer])
             //questionsに入った配列をquestionsAddとして保存
             myUserDefaults.set(questions, forKey: "questionsAdd")
             print(questions)
+            
             
             if let problem = textField.text {
                 showAlert(message: "\(problem)\n問題文を保存しました。")
